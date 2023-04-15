@@ -63,15 +63,13 @@ def upload_file(file_name, file_type="image/png", folder_id=FOLDER_ID):
 
 def give_permissions(file_id, email, name, count, role="reader"):
     message = f"""
+Namoskar {name}!
+Here is your QR code for the Noboborsho Bangali Bhoj. Get it scanned by our volunteers to enjoy the Bhoj.
 
-Hello {name}!
-Here is your QR code for the Saraswati Puja bhog. Please show this to the person at the door to get your bhog.
-
-This QR code can be scanned only {count} times and will expire after that. You are NOT supposed to scan this on your own, it will be scanned by the person at the door. If you scan this on your own, the QR will be void and you will not be able to get your bhog.
+This QR code can be scanned only {count} times and will expire after that. You are NOT supposed to scan this on your own to avoid any complications.
 
 Thank You,
-Saraswati Puja Committee.
-
+Noboborsho Organising Committee.
     """
 
     permission = {
@@ -99,18 +97,22 @@ new_data = {}
 
 for qr, person in tqdm(list(zip(l, data))):
     file_id = upload_file(qr)  # uploading the QR code to Drive
-    give_permissions(
-        file_id,
-        person["email"],
-        person["name"],
-        person["count"],# "reader"
-    )  # giving the person permission to view the file
-    
+    try:
+        give_permissions(
+            file_id,
+            person["email"],
+            person["name"],
+            person["count"],# "reader"
+        )  # giving the person permission to view the file
+    except:
+        print(f"Failed to give permissions to {person['name']} ({person['email']})")
+        continue
+
     # marking the person as done and remembering their unique codes
     new_data[qr[:-4]] = person  # qr[:-4] is the name of the QR code without the .png extension
-    
+
     # updating the stats.json file after every person is done, so that if the script crashes, we don't have to start over
     with open("stats.json", "w") as f:
         dump(new_data, f)
-    
-    sleep(0.5)
+
+    # sleep(0.5)
