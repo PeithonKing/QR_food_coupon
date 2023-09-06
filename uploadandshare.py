@@ -93,7 +93,13 @@ if len(l) < len(data):
 
 l = l[:len(data)]
 
-new_data = {}
+new_data = {
+    "master_key": {
+        "email": "master_key@niser.ac.in",
+        "name": "master",
+        "count": 10000
+    }
+}
 
 for qr, person in tqdm(list(zip(l, data))):
     file_id = upload_file(qr)  # uploading the QR code to Drive
